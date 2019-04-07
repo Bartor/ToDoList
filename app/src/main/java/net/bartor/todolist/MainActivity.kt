@@ -3,18 +3,18 @@ package net.bartor.todolist
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
-    private val taskList = mutableListOf<Task>()
+    private val taskList = ArrayList<Task>()
     private val NEW_TASK_REQUEST = 2137
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        taskList.add(Task("XDDD", "XD", Calendar.getInstance(), TaskType.PEOPLE))
 
         val adapter = ListAdapter(this, taskList)
         listView.adapter = adapter
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
                     )
 
                     taskList.add(t)
-                    listView.deferNotifyDataSetChanged()
+                    (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
                 }
             }
         }

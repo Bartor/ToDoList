@@ -38,12 +38,14 @@ class NewTaskActivity : AppCompatActivity() {
             i.putExtra("title", title_field.text.trim().toString())
             i.putExtra("subtitle", subtitle_field.text.trim().toString())
             i.putExtra("date", selected_date)
-            i.putExtra("type", when (type.checkedRadioButtonId) {
-                R.id.event_button -> TaskType.EVENT
-                R.id.people_button -> TaskType.PEOPLE
-                R.id.shopping_button -> TaskType.SHOPPING
-                else -> TaskType.EVENT
-            })
+            i.putExtra(
+                "type", when (type.checkedRadioButtonId) {
+                    R.id.event_button -> TaskType.EVENT
+                    R.id.people_button -> TaskType.PEOPLE
+                    R.id.shopping_button -> TaskType.SHOPPING
+                    else -> TaskType.EVENT
+                }
+            )
             setResult(Activity.RESULT_OK, i)
             finish()
         }
