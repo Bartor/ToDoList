@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">ToDoList</string>
+    <string name="by_name">name</string>
+    <string name="by_time">time</string>
+    <string name="by_type">type</string>
+    <string name="event">Event</string>
+    <string name="people">People</string>
+    <string name="shopping">Shopping</string>
+    <string name="title">title</string>
+    <string name="subtitle">subtitle</string>
+    <string name="date">time</string>
+    <string name="add">add</string>
+</resources>
