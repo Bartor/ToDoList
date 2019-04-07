@@ -3,6 +3,7 @@ package net.bartor.todolist
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -28,7 +29,6 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             NEW_TASK_REQUEST -> {
-                println("XD")
                 if (data != null) {
                     val t = Task(
                         data.getStringExtra("title"),

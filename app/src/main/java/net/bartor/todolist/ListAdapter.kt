@@ -36,6 +36,12 @@ class ListAdapter(context: Context, var data: ArrayList<Task>) : ArrayAdapter<Ta
                 Calendar.MONTH
             ) + 1}/${data.date.get(Calendar.YEAR)}"
 
+        row.setOnLongClickListener {
+            this.data.remove(getItem(position))
+            notifyDataSetChanged()
+            true
+        }
+
         return row
     }
 }
