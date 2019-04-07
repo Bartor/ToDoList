@@ -25,6 +25,21 @@ class MainActivity : AppCompatActivity() {
             val i = Intent(this, NewTaskActivity::class.java)
             startActivityForResult(i, NEW_TASK_REQUEST)
         }
+
+        byName.setOnClickListener {
+            taskList.sortBy { it.title }
+            (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
+        }
+
+        byTime.setOnClickListener {
+            taskList.sortBy { it.date.timeInMillis }
+            (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
+        }
+
+        byType.setOnClickListener {
+            taskList.sortBy { it.type }
+            (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
