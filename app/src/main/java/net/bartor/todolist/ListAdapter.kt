@@ -13,10 +13,6 @@ import kotlin.collections.ArrayList
 class ListAdapter(context: Context, var data: ArrayList<Task>) : ArrayAdapter<Task>(context, R.layout.list_item, data) {
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    override fun notifyDataSetChanged() {
-        super.notifyDataSetChanged()
-    }
-
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val data = getItem(position) as Task
 
