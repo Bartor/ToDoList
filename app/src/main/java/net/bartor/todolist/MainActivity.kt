@@ -3,6 +3,7 @@ package net.bartor.todolist
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_main.*
@@ -42,5 +43,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        outState?.putSerializable("tasks", taskList)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        taskList.addAll(savedInstanceState?.getSerializable("tasks") as ArrayList<Task>)
+        (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
     }
 }
