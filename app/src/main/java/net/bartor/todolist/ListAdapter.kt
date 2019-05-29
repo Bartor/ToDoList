@@ -1,43 +1,53 @@
 package net.bartor.todolist
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.list_item.view.*
+import net.bartor.todolist.db.Task
+import net.bartor.todolist.db.TaskType
 import java.util.*
-import kotlin.collections.ArrayList
 
-class ListAdapter(context: Context, var data: ArrayList<Task>) : ArrayAdapter<Task>(context, R.layout.list_item, data) {
-    private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+class TaskListAdapter(private val values: List<Task>, private val listener: (Task) -> Unit) :
+    RecyclerView.Adapter<TaskListAdapter.ViewHolder>() {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val data = getItem(position) as Task
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
+        return ViewHolder(view)
+    }
 
-        val row = inflater.inflate(R.layout.list_item, parent, false)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = values[position]
 
-        row.findViewById<TextView>(R.id.title_field).text = data.title
-        row.findViewById<TextView>(R.id.subtitle_field).text = data.subtitle
-        row.findViewById<ImageView>(R.id.type).setImageDrawable(
-            when (data.type) {
-                TaskType.SHOPPING -> context.getDrawable(R.drawable.ic_shopping_cart_black_24dp)
-                TaskType.PEOPLE -> context.getDrawable(R.drawable.ic_people_black_24dp)
-                TaskType.EVENT -> context.getDrawable(R.drawable.ic_more_vert_white_48dp)
+        holder.image.setImageResource(
+            when (item.type) {
+                TaskType.SHOPPING -> R.drawable.ic_shopping_cart_black_24dp
+                TaskType.PEOPLE -> R.drawable.ic_people_black_24dp
+                TaskType.EVENT -> R.drawable.ic_more_vert_white_48dp
             }
         )
-        row.findViewById<TextView>(R.id.time).text =
-            "${data.date.get(Calendar.HOUR_OF_DAY)}:${data.date.get(Calendar.MINUTE)} ${data.date.get(Calendar.DAY_OF_MONTH)}/${data.date.get(
+        holder.title.text = item.title
+        holder.subtitle.text = item.subtitle
+        holder.time.text =
+            "${item.date.get(Calendar.MINUTE)}:${item.date.get(Calendar.HOUR)} ${item.date.get(Calendar.DAY_OF_MONTH)}/${item.date.get(
                 Calendar.MONTH
-            ) + 1}/${data.date.get(Calendar.YEAR)}"
+            )}/${item.date.get(Calendar.YEAR)}"
 
-        row.setOnLongClickListener {
-            this.data.remove(getItem(position))
-            notifyDataSetChanged()
+        holder.view.setOnLongClickListener {
+            listener(item)
             true
         }
+    }
 
-        return row
+    override fun getItemCount() = values.size
+
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val image: ImageView = view.type_image
+        val title: TextView = view.title_field
+        val subtitle: TextView = view.subtitle_field
+        val time: TextView = view.time
     }
 }

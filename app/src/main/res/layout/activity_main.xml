@@ -25,25 +25,36 @@
                 android:text="@string/by_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/byType" android:layout_weight="1"
-                android:background="@color/colorPrimaryDark" android:textColor="@color/colorAccent"/>
+                android:background="@drawable/button_background" android:textColor="@color/colorAccent"/>
         <Button
                 android:text="@string/by_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/byName" android:layout_weight="1"
-                android:background="@color/colorPrimaryDark" android:textColor="@color/colorAccent"
+                android:background="@drawable/button_background" android:textColor="@color/colorAccent"
         />
         <Button
                 android:text="@string/by_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/byTime" android:layout_weight="1"
-                android:background="@color/colorPrimaryDark" android:textColor="@color/colorAccent"/>
+                android:background="@drawable/button_background" android:textColor="@color/colorAccent"/>
     </LinearLayout>
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
             android:layout_width="0dp"
-            android:layout_height="0dp" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" android:id="@+id/listView"/>
+            android:layout_height="0dp"
+            android:id="@+id/recycler" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/editText" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" tools:listitem="@layout/list_item"
+            android:layout_marginEnd="8dp"/>
+    <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/editText" android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:padding="14dp" android:hint="search"/>
 
 </android.support.constraint.ConstraintLayout>

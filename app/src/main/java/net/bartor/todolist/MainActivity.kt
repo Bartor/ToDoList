@@ -1,75 +1,55 @@
 package net.bartor.todolist
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.view.View
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
+import net.bartor.todolist.db.AppDatabase
+import net.bartor.todolist.db.Task
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
-    private val taskList = ArrayList<Task>()
-    private val NEW_TASK_REQUEST = 2137
+    private lateinit var taskList: LiveData<List<Task>>
+    private val adapterList: ArrayList<Task> = arrayListOf()
+    private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val adapter = ListAdapter(this, taskList)
-        listView.adapter = adapter
+        db = AppDatabase.getInstance(this)!!
+
+        recycler.adapter = TaskListAdapter(adapterList) {
+            db.taskDao().delete(it)
+        }
+
+        taskList = AppDatabase.getInstance(this)?.taskDao()?.getAll()!!
+        taskList.observe(this, Observer {
+            adapterList.clear()
+            adapterList.addAll(it!!)
+        })
 
         addButton.setOnClickListener {
             val i = Intent(this, NewTaskActivity::class.java)
-            startActivityForResult(i, NEW_TASK_REQUEST)
+            startActivity(i)
         }
 
         byName.setOnClickListener {
-            taskList.sortBy { it.title }
-            (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
+            adapterList.sortBy { it.title }
+            recycler.adapter!!.notifyDataSetChanged()
         }
 
         byTime.setOnClickListener {
-            taskList.sortBy { it.date.timeInMillis }
-            (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
+            adapterList.sortBy { it.date.timeInMillis }
+            recycler.adapter!!.notifyDataSetChanged()
         }
 
         byType.setOnClickListener {
-            taskList.sortBy { it.type }
-            (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
+            adapterList.sortBy { it.type }
+            recycler.adapter!!.notifyDataSetChanged()
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            NEW_TASK_REQUEST -> {
-                if (data != null) {
-                    val t = Task(
-                        data.getStringExtra("title"),
-                        data.getStringExtra("subtitle"),
-                        data.getSerializableExtra("date") as Calendar,
-                        data.getSerializableExtra("type") as TaskType
-                    )
-
-                    taskList.add(t)
-                    (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
-                }
-            }
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-
-        outState?.putSerializable("tasks", taskList)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-
-        taskList.addAll(savedInstanceState?.getSerializable("tasks") as ArrayList<Task>)
-        (listView.adapter as ArrayAdapter<Task>).notifyDataSetChanged()
     }
 }
