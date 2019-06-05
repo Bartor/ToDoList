@@ -1,12 +1,16 @@
 package net.bartor.todolist
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.text.Editable
+import android.text.TextWatcher
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.bartor.todolist.db.AppDatabase
 import net.bartor.todolist.db.Task
 import kotlin.collections.ArrayList
@@ -23,13 +27,19 @@ class MainActivity : AppCompatActivity() {
         db = AppDatabase.getInstance(this)!!
 
         recycler.adapter = TaskListAdapter(adapterList) {
-            db.taskDao().delete(it)
+            GlobalScope.launch {
+                db.taskDao().delete(it)
+            }
         }
 
-        taskList = AppDatabase.getInstance(this)?.taskDao()?.getAll()!!
+        recycler.layoutManager = LinearLayoutManager(this)
+
+        taskList = db.taskDao().getAll()
         taskList.observe(this, Observer {
+            println(it)
             adapterList.clear()
             adapterList.addAll(it!!)
+            recycler.adapter.notifyDataSetChanged()
         })
 
         addButton.setOnClickListener {
@@ -51,5 +61,20 @@ class MainActivity : AppCompatActivity() {
             adapterList.sortBy { it.type }
             recycler.adapter!!.notifyDataSetChanged()
         }
+
+        editText.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                val res = db.taskDao().findByTitle("%${p0.toString()}%")
+                res.observe(this@MainActivity, Observer {
+                    adapterList.clear()
+                    adapterList.addAll(it!!)
+                    recycler.adapter.notifyDataSetChanged()
+                })
+            }
+        })
     }
 }
