@@ -1,5 +1,6 @@
 package net.bartor.todolist
 
+import android.app.*
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.content.BroadcastReceiver
@@ -17,14 +18,15 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.bartor.todolist.db.AppDatabase
 import net.bartor.todolist.db.Task
-import net.bartor.todolist.notifications.NotificationService
+import java.util.*
 import kotlin.collections.ArrayList
+
+const val CHANNEL_ID = "wololo"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var taskList: LiveData<List<Task>>
     private val adapterList: ArrayList<Task> = arrayListOf()
     private lateinit var db: AppDatabase
-    private var lastService: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,10 +48,14 @@ class MainActivity : AppCompatActivity() {
             adapterList.clear()
             adapterList.addAll(it!!)
 
-            if (lastService != null) stopService(lastService)
-            lastService = Intent(this@MainActivity, NotificationService::class.java)
-            lastService!!.putExtra("tasks", adapterList)
-            startService(lastService!!)
+            val manager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            for (task in it) {
+                println(task)
+                val intent = Intent(this, Receiver::class.java)
+                    .putExtra("task", task)
+                val broadcast = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+                manager.setExact(AlarmManager.RTC_WAKEUP, task.date.timeInMillis, broadcast)
+            }
 
             recycler.adapter.notifyDataSetChanged()
         })
@@ -74,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             recycler.adapter!!.notifyDataSetChanged()
         }
 
-        editText.addTextChangedListener(object: TextWatcher {
+        editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
